@@ -1,0 +1,53 @@
+<!doctype html>
+<title>Lusynth</title>
+<style>.row { display: flex }</style>
+<script defer>
+'use strict'
+
+function createDiv() { return document.createElement('div') }
+
+function col(text) {
+    var div = createDiv()
+    div.textContent = text
+    return div
+}
+
+function row(nodes) {
+    var div = createDiv()
+    div.classList.add('row')
+    nodes.forEach(function(n) { div.appendChild(n.dom()) })
+    return div
+}
+
+class Atom {
+    constructor(x) { this.x = x }
+    ref() { return this }
+    sub() { return this }
+    reduce() { return this }
+    dom() { return col(this.x) }
+}
+
+function reduce(node) {
+    var reduct = node.reduce()
+    if (reduct == node) return node
+    return reduce(reduct)
+}
+
+function draw() {
+    drawPending = false
+    var dom = row([code, reduce(code)])
+    document.body.replaceChild(dom, document.getElementById(dom.id = 'ui'))
+}
+
+function requestDraw() {
+    if (!drawPending) {
+        requestAnimationFrame(draw)
+        drawPending = true
+    }
+}
+
+var code = new Atom(0)
+var drawPending = false
+requestDraw()
+</script>
+<div id=ui></div>
